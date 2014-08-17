@@ -19,6 +19,7 @@ defmodule OAuth2.Mixfile do
     [{:cowboy,           "~> 1.0.0"},
      {:plug,             "~> 0.5.3"},
      {:jazz,             "~> 0.2.0"},
-     {:plug_json_parser, "~> 0.0.4"}]
+     {:plug_json_parser, "~> 0.0.4"},
+     {:timex,            "~> 0.12.3"}]
   end
 end

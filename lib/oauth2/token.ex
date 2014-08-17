@@ -8,11 +8,11 @@ defmodule OAuth2.Token do
       access_token:  token.access_token,
       refresh_token: token.refresh_token,
       token_type:    "bearer",
-      expires_in:    expires_in(token)
+      expires_in:    expires_in
     }
   end
 
-  def expires_in(token) do
-    'today'
+  def expires_in do
+    Application.get_env(:oauth2, :token_expires_in_seconds)
   end
 end

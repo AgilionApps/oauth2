@@ -7,4 +7,5 @@
   "plug_json_parser": {:package, "0.0.4"},
   "poolboy": {:package, "1.2.1"},
   "postgrex": {:package, "0.5.4"},
-  "ranch": {:package, "1.0.0"}}
+  "ranch": {:package, "1.0.0"},
+  "timex": {:package, "0.12.3"}}

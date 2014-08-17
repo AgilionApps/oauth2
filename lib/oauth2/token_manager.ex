@@ -1,5 +1,6 @@
 defmodule OAuth2.TokenManager do
   use GenServer
+  use Timex
   alias OAuth2.Token
 
   # Client
@@ -22,19 +23,25 @@ defmodule OAuth2.TokenManager do
     token = %Token{
       access_token: new_token(tokens),
       user_id:      user_id,
+      created_at:   Time.now(:secs)
     }
     tokens = HashDict.put_new(tokens, token.access_token, token)
     {:reply, {:ok, token}, tokens}
   end
 
-  def handle_call({:find, token}, _from, tokens) do
-    #TODO: handle expiration
-    token = HashDict.get(tokens, token)
-    {:reply, {:ok, token}, tokens}
-  end
+  def handle_call({:find, access_token}, _from, tokens) do
+    invalid_before = Time.now(:secs) - Token.expires_in
+    case HashDict.get(tokens, access_token) do
+      nil ->
+        {:reply, {:error, "Invalid token"}, tokens}
 
-  def handle_call(msg, from, state) do
-    super(msg, from, state)
+      %Token{created_at: c} when c < invalid_before ->
+        tokens = HashDict.delete(tokens, access_token)
+        {:reply, {:error, "Expired token"}, tokens}
+
+      token ->
+        {:reply, {:ok, token}, tokens}
+    end
   end
 
   defp new_token(tokens) do
