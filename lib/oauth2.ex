@@ -26,7 +26,7 @@ defmodule OAuth2 do
   def start(_type, _args) do
     # When used as a dependency env is always prod.
     if Mix.env == :dev do
-      Plug.Adapters.Cowboy.http(OAuth2.DevRouter, [])
+      Plug.Adapters.Cowboy.http(OAuth2.Dev.Router, [])
     end
     OAuth2.Supervisor.start_link
   end

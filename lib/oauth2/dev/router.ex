@@ -1,4 +1,4 @@
-defmodule OAuth2.DevRouter do
+defmodule OAuth2.Dev.Router do
   import Plug.Conn
   use Plug.Router
 

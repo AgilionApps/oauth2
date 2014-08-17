@@ -1,6 +1,8 @@
 defmodule OAuth2.Router do
   import Plug.Conn
   use Plug.Router
+  alias OAuth2.TokenManager
+  alias OAuth2.Token
 
   plug Plug.Parsers, parsers: [PlugJsonParser]
   plug :match
@@ -35,17 +37,19 @@ defmodule OAuth2.Router do
     conn |> send_resp(200, "Token")
   end
 
-  defp authenticate(_username, _password) do
-    {:error, "not implimented"}
+  defp authenticate(username, password) do
+    Application.get_env(:oauth2, :authenticateable)
+      |> Kernel.apply(:authenticate, [username, password])
   end
 
   defp send_json(conn, status, body) do
     send_resp(conn, status, Jazz.encode!(body))
   end
 
-  defp send_new_token(conn, _user) do
-    #token = Token.create_for_user(user)
-    send_json(conn, 201, %{token: 'wat'})
+  defp send_new_token(conn, user) do
+    {:ok, token} = TokenManager.create(user[:id])
+    token = Token.as_json(token)
+    send_json(conn, 201, token)
   end
 
   defp send_not_authorized(conn) do

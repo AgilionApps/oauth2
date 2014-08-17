@@ -15,9 +15,30 @@ defmodule OAuth2.RouterTest do
     conn("POST", path, body, headers: headers)
   end
 
-  test "authenticating with password" do
-    body = %{grant_type: "password"}
-    conn = post_json("token", body)
+  test "authenticating with correct password" do
+    json = %{
+      grant_type: "password",
+      username:   "testuser",
+      password:   "correctpassword"
+    }
+    conn = post_json("token", json)
+    conn = Router.call(conn, [])
+    assert conn.status == 201
+    result = conn.resp_body |> Jazz.decode!
+    assert result["user_id"] == 1
+    assert result["token_type"] == "bearer"
+    assert Dict.has_key?(result, "access_token")
+    assert Dict.has_key?(result, "refresh_token")
+    assert Dict.has_key?(result, "expires_in")
+  end
+
+  test "authenticating with wrong password" do
+    json = %{
+      grant_type: "password",
+      username:   "testuser",
+      password:   "wrong"
+    }
+    conn = post_json("token", json)
     conn = Router.call(conn, [])
     assert conn.status == 401
   end

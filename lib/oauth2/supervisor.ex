@@ -7,7 +7,7 @@ defmodule OAuth2.Supervisor do
   end
 
   def init(:ok) do
-    children = [worker(OAuth2.Repo, [])]
+    children = [worker(OAuth2.TokenManager, [])]
     supervise(children, strategy: :one_for_all)
   end
 end

@@ -10,7 +10,7 @@ defmodule OAuth2.Mixfile do
 
   # Type `mix help compile.app` for more information
   def application do
-    [applications: [:logger, :postgrex, :ecto, :cowboy, :plug],
+    [applications: [:logger, :cowboy, :plug],
      mod: {OAuth2, []}]
   end
 
@@ -18,8 +18,6 @@ defmodule OAuth2.Mixfile do
   defp deps do
     [{:cowboy,           "~> 1.0.0"},
      {:plug,             "~> 0.5.3"},
-     {:postgrex,         "~> 0.5.4"},
-     {:ecto,             "~> 0.2.0"},
      {:jazz,             "~> 0.2.0"},
      {:plug_json_parser, "~> 0.0.4"}]
   end
