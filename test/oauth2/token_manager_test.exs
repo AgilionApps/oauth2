@@ -6,19 +6,24 @@ defmodule TokenManagerTest do
 
   setup do
     valid = %Token{
-      access_token: 'valid',
-      user_id: 1,
-      created_at: Time.now(:secs)
+      access_token:  'valid',
+      refresh_token: 'valid_refresh',
+      user_id:        1,
+      created_at:    Time.now(:secs)
     }
     expired = %Token{
-      access_token: 'expired',
-      user_id: 1,
-      created_at: Time.now(:secs) - (60 * 60 * 24)
+      access_token:  'expired',
+      refresh_token: 'expired_refresh',
+      user_id:       1,
+      created_at:    Time.now(:secs) - (60 * 60 * 24 * 90)
     }
-    existing_tokens = HashDict.new
+    tokens = HashDict.new
       |> HashDict.put_new(valid.access_token, valid)
       |> HashDict.put_new(expired.access_token, expired)
-    {:ok, pid} = GenServer.start_link(TokenManager, existing_tokens)
+    refresh_tokens = HashDict.new
+      |> HashDict.put_new(valid.refresh_token, valid)
+      |> HashDict.put_new(expired.refresh_token, expired)
+    {:ok, pid} = GenServer.start_link(TokenManager, {tokens, refresh_tokens})
     {:ok, pid: pid, valid: valid, expired: expired}
   end
 
@@ -26,6 +31,7 @@ defmodule TokenManagerTest do
     {:ok, results} = GenServer.call(context[:pid], {:create, 1})
     assert results.user_id == 1
     assert results.access_token
+    assert results.refresh_token
   end
 
   test "finding a token", context do
@@ -41,5 +47,15 @@ defmodule TokenManagerTest do
   test "finding missing token", context do
     {:error, message} = GenServer.call(context[:pid], {:find, "nonsense"})
     assert message == "Invalid token"
+  end
+
+  test "finding a refresh token", context do
+    {:ok, results} = GenServer.call(context[:pid], {:find_by_refresh, context[:valid].refresh_token})
+    assert results.user_id == 1
+  end
+
+  test "finding an expired refresh token", context do
+    {:error, message} = GenServer.call(context[:pid], {:find_by_refresh, context[:expired].refresh_token})
+    assert message == "Expired refresh token"
   end
 end

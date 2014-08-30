@@ -2,7 +2,7 @@ defmodule OAuth2.Dev.User do
   # use OAuth2.Authenticateable # Todo, define behavior
 
   def authenticate("testuser","correctpassword") do
-    {:ok, %{id: 1, username: "testuser", email: "test@example.com"}}
+    {:ok, 1}
   end
 
   def authenticate(_username,_password) do

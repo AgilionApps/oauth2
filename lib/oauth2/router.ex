@@ -14,9 +14,9 @@ defmodule OAuth2.Router do
 
   post "token" do
     case conn.params["grant_type"] do
-      "password" -> authenticate_with_password(conn)
-      "token"    -> authenticate_with_refresh_token(conn)
-      _          -> send_resp(conn, 401, "Unsupported Grant Type")
+      "password"      -> authenticate_with_password(conn)
+      "refresh_token" -> authenticate_with_refresh_token(conn)
+      _               -> send_resp(conn, 401, "Unsupported Grant Type")
     end
   end
 
@@ -28,13 +28,17 @@ defmodule OAuth2.Router do
     username = conn.params["username"]
     password = conn.params["password"]
     case authenticate(username, password) do
-      {:ok,    user} -> send_new_token(conn, user)
+      {:ok,    user_id} -> send_new_token(conn, user_id)
       {:error, _ }   -> send_not_authorized(conn)
     end
   end
 
   defp authenticate_with_refresh_token(conn) do
-    conn |> send_resp(200, "Token")
+    token = conn.params["refresh_token"]
+    case TokenManager.find_by_refresh(token) do
+      {:ok,   token} -> send_new_token(conn, token.user_id)
+      {:error, _ }   -> send_not_authorized(conn)
+    end
   end
 
   defp authenticate(username, password) do
@@ -46,8 +50,8 @@ defmodule OAuth2.Router do
     send_resp(conn, status, Jazz.encode!(body))
   end
 
-  defp send_new_token(conn, user) do
-    {:ok, token} = TokenManager.create(user[:id])
+  defp send_new_token(conn, user_id) do
+    {:ok, token} = TokenManager.create(user_id)
     token = Token.as_json(token)
     send_json(conn, 201, token)
   end
