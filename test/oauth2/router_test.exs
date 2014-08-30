@@ -3,7 +3,6 @@ defmodule OAuth2.RouterTest do
   use Plug.Test
   alias OAuth2.Router
   alias OAuth2.TokenManager
-  alias OAuth2.Token
 
   test "status" do
     conn = conn("GET", "status")

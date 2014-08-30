@@ -22,7 +22,18 @@ defmodule OAuth2.TokenManager do
     GenServer.call(__MODULE__, {:find_by_refresh, token})
   end
 
+  def prune do
+    send __MODULE__, :prune
+    send __MODULE__, :prune_refresh
+  end
+
   # Server
+
+  def init(state) do
+    :erlang.send_after(60*60*5, self, :prune)
+    :erlang.send_after(60*60*24, self, :prune_refresh)
+    {:ok, state}
+  end
 
   def handle_call({:create, user_id}, _from, {tokens, refresh_tokens}) do
     token = %Token{
@@ -64,6 +75,26 @@ defmodule OAuth2.TokenManager do
       token ->
         {:reply, {:ok, token}, {tokens, refresh_tokens}}
     end
+  end
+
+  def handle_info(:prune, _from, {tokens, refresh_tokens}) do
+    tokens = prune(tokens)
+    :erlang.send_after(60*60*5, self, :prune)
+    {:noreply, {tokens, refresh_tokens}}
+  end
+
+  def handle_info(:prune_refresh, _from, {tokens, refresh_tokens}) do
+    refresh_tokens = prune_refresh(refresh_tokens)
+    :erlang.send_after(60*60*24, self, :prune_refresh)
+    {:noreply, {tokens, refresh_tokens}}
+  end
+
+  defp prune(tokens) do
+    for {k, v} <- tokens, !Token.expired?(v), into: HashDict.new, do: {k, v}
+  end
+
+  defp prune_refresh(tokens) do
+    for {k, v} <- tokens, !Token.refresh_expired?(v), into: HashDict.new, do: {k, v}
   end
 
   defp new_token(tokens) do

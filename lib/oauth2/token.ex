@@ -19,4 +19,14 @@ defmodule OAuth2.Token do
   def refresh_expires_in do
     Application.get_env(:oauth2, :refresh_expires_in_seconds) || 60 * 60 * 24 * 30
   end
+
+  def expired?(token) do
+    invalid_before = Time.now(:secs) - Token.expires_in
+    token.created_at < invalid_before
+  end
+
+  def refresh_expired?(token) do
+    invalid_before = Time.now(:secs) - Token.refresh_expires_in
+    token.created_at < invalid_before
+  end
 end
