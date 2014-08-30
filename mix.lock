@@ -2,7 +2,10 @@
   "cowlib": {:package, "1.0.0"},
   "decimal": {:package, "0.2.4"},
   "ecto": {:package, "0.2.3"},
+  "jazz": {:package, "0.2.0"},
   "plug": {:package, "0.5.3"},
+  "plug_json_parser": {:package, "0.0.4"},
   "poolboy": {:package, "1.2.1"},
   "postgrex": {:package, "0.5.4"},
-  "ranch": {:package, "1.0.0"}}
+  "ranch": {:package, "1.0.0"},
+  "timex": {:package, "0.12.3"}}
