@@ -8,11 +8,11 @@ defmodule OAuth2.Router do
   plug :match
   plug :dispatch
 
-  get "status" do
+  get "/status" do
     conn |> send_json(200, %{status: 'okay'})
   end
 
-  post "token" do
+  post "/token" do
     case conn.params["grant_type"] do
       "password"      -> authenticate_with_password(conn)
       "refresh_token" -> authenticate_with_refresh_token(conn)
