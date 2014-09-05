@@ -27,6 +27,6 @@ defmodule OAuth2.Protected do
   end
 
   def send_unauthorized(conn) do
-    conn |> send_resp(401, "Unauthorized")
+    conn |> send_resp(401, "")
   end
 end
