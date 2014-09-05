@@ -20,14 +20,9 @@ defmodule OAuth2 do
   use Application
 
   @doc """
-  Main OAuth2 entry point.
-  Starts main supervisor, also starts cowboy http server in dev.
+  Main OAuth2 entry point. Starts main supervisor.
   """
   def start(_type, _args) do
-    # When used as a dependency env is always prod.
-    if Mix.env == :dev do
-      Plug.Adapters.Cowboy.http(OAuth2.Dev.Router, [])
-    end
     OAuth2.Supervisor.start_link
   end
 end

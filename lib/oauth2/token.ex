@@ -1,7 +1,6 @@
 defmodule OAuth2.Token do
   defstruct access_token: nil, refresh_token: nil, user_id: nil, created_at: nil
 
-  #TODO: Make this better. Protocols maybe?
   def as_json(token) do
     %{
       user_id:       token.user_id,
@@ -13,7 +12,7 @@ defmodule OAuth2.Token do
   end
 
   def expires_in do
-    Application.get_env(:oauth2, :token_expires_in_seconds)
+    Application.get_env(:oauth2, :token_expires_in_seconds) || 60 * 60
   end
 
   def refresh_expires_in do
