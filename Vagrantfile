@@ -6,7 +6,7 @@ VAGRANTFILE_API_VERSION = '2'
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = 'hashicorp/precise64'
 
-  config.vm.network :forwarded_port, guest: 4200, host: 4201
+  config.vm.network :forwarded_port, guest: 4000, host: 4001
   config.vm.network :private_network, ip: '10.10.10.60'
 
   config.vm.synced_folder '.', '/vagrant', type: 'nfs'

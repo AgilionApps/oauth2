@@ -4,12 +4,12 @@ defmodule OAuth2.Router do
   alias OAuth2.TokenManager
   alias OAuth2.Token
 
-  plug Plug.Parsers, parsers: [PlugJsonParser]
+  plug Plug.Parsers, parsers: [:urlencoded, PlugJsonParser]
   plug :match
   plug :dispatch
 
   get "/status" do
-    conn |> send_json(200, %{status: 'okay'})
+    conn |> send_json(200, %{status: "okay"})
   end
 
   post "/token" do
