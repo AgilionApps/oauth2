@@ -17,7 +17,7 @@ defmodule OAuth2.DevRouterTest do
 
   test "protected path with valid token" do
     {:ok, token} = OAuth2.TokenManager.create(1)
-    headers = [authorization: "Bearer #{token.access_token}"]
+    headers = [{"authorization", "Bearer #{token.access_token}"}]
     conn = conn("GET", "/protected", nil, headers: headers)
     conn = Router.call(conn, [])
     assert conn.status == 200

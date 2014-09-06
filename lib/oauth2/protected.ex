@@ -20,8 +20,8 @@ defmodule OAuth2.Protected do
   end
 
   def get_bearer_token(conn) do
-    case conn.req_headers[:authorization] do
-      "Bearer " <> access_token -> {:ok, access_token}
+    case get_req_header(conn, "authorization") do
+      ["Bearer " <> access_token] -> {:ok, access_token}
       _ -> {:error, "No token found"}
     end
   end
