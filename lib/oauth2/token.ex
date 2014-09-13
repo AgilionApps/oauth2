@@ -23,4 +23,22 @@ defmodule OAuth2.Token do
     invalid_before = Time.now(:secs) - refresh_expires_in
     token.created_at < invalid_before
   end
+
+  def create(user_id, access_tokens, refresh_tokens) do
+    %__MODULE__{
+      access_token:  new_token(access_tokens),
+      refresh_token: new_token(refresh_tokens),
+      user_id:       user_id,
+      created_at:    Time.now(:secs)
+    }
+  end
+
+  defp new_token(tokens) do
+    token = :base64.encode(:crypto.strong_rand_bytes(100))
+    if HashDict.has_key?(tokens, token) do
+      new_token(tokens)
+    else
+      token
+    end
+  end
 end

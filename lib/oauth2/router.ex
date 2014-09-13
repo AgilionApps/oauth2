@@ -2,7 +2,6 @@ defmodule OAuth2.Router do
   import Plug.Conn
   use Plug.Router
   alias OAuth2.TokenManager
-  alias OAuth2.Token
 
   defmodule GrantRequest do
     defstruct [:grant_type, :username, :password, :refresh_token]

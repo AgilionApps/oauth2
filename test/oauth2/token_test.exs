@@ -38,5 +38,4 @@ defmodule OAuth2.TokenTest do
     assert Token.expired?(token)
     assert Token.refresh_expired?(token)
   end
-
 end
