@@ -3,21 +3,40 @@ defmodule OAuth2.TokenTest do
   alias OAuth2.Token
   use Timex
 
-  setup do
+  test "isnt expired" do
     token = %Token{
       access_token:  "myaccesstokenstring",
       user_id:       1,
       refresh_token: "myrefreshtokenstring",
-      created_at:    Time.now
+      created_at:    Time.now(:secs)
     }
-    {:ok, token: token}
+
+    assert !Token.expired?(token)
+    assert !Token.refresh_expired?(token)
   end
 
-  test "it is rendered as json correctly", context do
-    json = Token.as_json(context[:token])
-    assert json[:access_token]  == "myaccesstokenstring"
-    assert json[:refresh_token] == "myrefreshtokenstring"
-    assert json[:user_id]       == 1
-    assert json[:expires_in]    == 60 * 60
+  test "access token expired" do
+    token = %Token{
+      access_token:  "myaccesstokenstring",
+      user_id:       1,
+      refresh_token: "myrefreshtokenstring",
+      created_at:    Time.now(:secs) - (60 * 60) - 1
+    }
+
+    assert Token.expired?(token)
+    assert !Token.refresh_expired?(token)
   end
+
+  test "refresh expired" do
+    token = %Token{
+      access_token:  "myaccesstokenstring",
+      user_id:       1,
+      refresh_token: "myrefreshtokenstring",
+      created_at:    Time.now(:secs) - (60 * 60 * 24 * 30) - 1
+    }
+
+    assert Token.expired?(token)
+    assert Token.refresh_expired?(token)
+  end
+
 end
