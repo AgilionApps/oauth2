@@ -12,7 +12,7 @@ defmodule OAuth2.RouterTest do
 
   defp post_json(path, body) do
     headers = [{"content-type", "application/json"}]
-    body = Jazz.encode!(body)
+    body = Poison.encode!(body, string: true)
     conn("POST", path, body, headers: headers)
   end
 
@@ -25,7 +25,7 @@ defmodule OAuth2.RouterTest do
     conn = post_json("token", json)
     conn = Router.call(conn, [])
     assert conn.status == 201
-    result = conn.resp_body |> Jazz.decode!
+    result = conn.resp_body |> Poison.decode!
     assert result["user_id"] == 1
     assert result["token_type"] == "bearer"
     assert Dict.has_key?(result, "access_token")
@@ -53,7 +53,7 @@ defmodule OAuth2.RouterTest do
     conn = post_json("token", json)
     conn = Router.call(conn, [])
     assert conn.status == 201
-    result = conn.resp_body |> Jazz.decode!
+    result = conn.resp_body |> Poison.decode!
     assert result["user_id"] == 1
     assert result["token_type"] == "bearer"
     assert Dict.has_key?(result, "access_token")

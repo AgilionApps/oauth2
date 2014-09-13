@@ -4,7 +4,7 @@ defmodule OAuth2.Router do
   alias OAuth2.TokenManager
   alias OAuth2.Token
 
-  plug Plug.Parsers, parsers: [:urlencoded, PlugJsonParser]
+  plug Plug.Parsers, parsers: [:urlencoded, :multipart, PlugJsonParser]
   plug :match
   plug :dispatch
 
@@ -47,7 +47,7 @@ defmodule OAuth2.Router do
   end
 
   defp send_json(conn, status, body) do
-    send_resp(conn, status, Jazz.encode!(body))
+    send_resp(conn, status, Poison.encode!(body, string: true))
   end
 
   defp send_new_token(conn, user_id) do

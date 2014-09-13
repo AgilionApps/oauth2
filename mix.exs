@@ -18,9 +18,8 @@ defmodule OAuth2.Mixfile do
   defp deps do
     [{:cowboy,           "~> 1.0.0"},
      {:plug,             "~> 0.7.0"},
-     {:jazz,             "~> 0.2.0"},
-     #{:plug_json_parser, "~> 0.0.4"},
-     {:plug_json_parser, github: "alanpeabody/plug_json_parser", branch: "update-dependencies"},
+     {:poison,           "~> 1.1.1"},
+     {:plug_json_parser, "~> 0.0.6"},
      {:timex,            "~> 0.12.3"}]
   end
 end
