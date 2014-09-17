@@ -58,4 +58,19 @@ defmodule TokenManagerTest do
     {:error, message} = GenServer.call(context[:pid], {:find_by_refresh, context[:expired].refresh_token})
     assert message == "Expired refresh token"
   end
+
+  test "pruning tokens", context do
+    send(context[:pid], :prune)
+
+    # Wait so prune completes
+    :timer.sleep(100)
+
+    assert {:error, message} =
+      GenServer.call(context[:pid], {:find, context[:expired].access_token})
+    assert message == "Invalid token"
+
+    assert {:error, message} =
+      GenServer.call(context[:pid], {:find_by_refresh, context[:expired].refresh_token})
+    assert message == "Invalid token"
+  end
 end
