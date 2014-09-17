@@ -3,12 +3,7 @@ defmodule OAuth2.Router do
   use Plug.Router
   alias OAuth2.TokenManager
 
-  defmodule GrantRequest do
-    defstruct [:grant_type, :username, :password, :refresh_token]
-  end
-
-  plug Plug.Parsers, parsers: [:urlencoded, :multipart, PlugJsonParser],
-    plug_json_parser: [as: GrantRequest]
+  plug Plug.Parsers, parsers: [:urlencoded, :multipart, PlugJsonParser]
   plug :match
   plug :dispatch
 
@@ -17,10 +12,10 @@ defmodule OAuth2.Router do
   end
 
   post "/token" do
-    case conn.params.grant_type do
+    case conn.params["grant_type"] do
       "password"      -> authenticate_with_password(conn)
       "refresh_token" -> authenticate_with_refresh_token(conn)
-      _               -> send_resp(conn, 401, "Unsupported Grant Type")
+      _               -> send_resp(conn, 420, "Unsupported Grant Type")
     end
   end
 
@@ -29,16 +24,16 @@ defmodule OAuth2.Router do
   end
 
   defp authenticate_with_password(conn) do
-    username = conn.params.username
-    password = conn.params.password
+    username = conn.params["username"]
+    password = conn.params["password"]
     case authenticate(username, password) do
       {:ok,    user_id} -> send_new_token(conn, user_id)
-      {:error, _ }   -> send_not_authorized(conn)
+      {:error, _ }      -> send_not_authorized(conn)
     end
   end
 
   defp authenticate_with_refresh_token(conn) do
-    token = conn.params.refresh_token
+    token = conn.params["refresh_token"]
     case TokenManager.find_by_refresh(token) do
       {:ok,   token} -> send_new_token(conn, token.user_id)
       {:error, _ }   -> send_not_authorized(conn)
